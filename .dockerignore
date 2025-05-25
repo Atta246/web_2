@@ -1,0 +1,18 @@
+# filepath: c:\Users\ahmed\Desktop\testing\.dockerignore
+.git
+.github
+.gitignore
+.next
+.husky
+coverage
+node_modules
+README.md
+.env
+.env.*
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.DS_Store
+jest.config.js
+__tests__
+.vscode

@@ -1,0 +1,240 @@
+// API services for interacting with the backend
+
+// Use relative paths for Next.js API routes
+const API_BASE_URL = '';
+
+// Menu API endpoints
+export const menuService = {
+  // Get all menu items
+  getAllItems: async () => {
+    try {
+      const response = await fetch(`/api/menu`);
+      if (!response.ok) throw new Error('Failed to fetch menu items');
+      return await response.json();
+    } catch (error) {
+      console.error('Error fetching menu items:', error);
+      throw error;
+    }
+  },
+  // Get menu item by ID
+  getItemById: async (id) => {
+    try {
+      const response = await fetch(`/api/menu/${id}`);
+      if (!response.ok) throw new Error('Failed to fetch menu item');
+      return await response.json();
+    } catch (error) {
+      console.error(`Error fetching menu item ${id}:`, error);
+      throw error;
+    }
+  },
+
+  // Create new menu item
+  createItem: async (menuItem) => {
+    try {
+      const response = await fetch(`/api/menu`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify(menuItem)
+      });
+      if (!response.ok) throw new Error('Failed to create menu item');
+      return await response.json();
+    } catch (error) {
+      console.error('Error creating menu item:', error);
+      throw error;
+    }
+  },
+
+  // Update menu item
+  updateItem: async (id, menuItem) => {
+    try {
+      const response = await fetch(`/api/menu/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify(menuItem)
+      });
+      if (!response.ok) throw new Error('Failed to update menu item');
+      return await response.json();
+    } catch (error) {
+      console.error(`Error updating menu item ${id}:`, error);
+      throw error;
+    }
+  },
+
+  // Delete menu item
+  deleteItem: async (id) => {
+    try {
+      const response = await fetch(`/api/menu/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      if (!response.ok) throw new Error('Failed to delete menu item');
+      return await response.json();
+    } catch (error) {
+      console.error(`Error deleting menu item ${id}:`, error);
+      throw error;
+    }
+  }
+};
+
+// Reservation API endpoints
+export const reservationService = {
+  // Get all reservations  getAllReservations: async () => {
+    try {
+      const response = await fetch(`/api/reservation`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      if (!response.ok) throw new Error('Failed to fetch reservations');
+      return await response.json();
+    } catch (error) {
+      console.error('Error fetching reservations:', error);
+      throw error;
+    }
+  },
+
+  // Get reservation by ID
+  getReservationById: async (id) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/reservations/${id}`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      if (!response.ok) throw new Error('Failed to fetch reservation');
+      return await response.json();
+    } catch (error) {
+      console.error(`Error fetching reservation ${id}:`, error);
+      throw error;
+    }
+  },
+
+  // Create new reservation
+  createReservation: async (reservation) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/reservations`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(reservation)
+      });
+      if (!response.ok) throw new Error('Failed to create reservation');
+      return await response.json();
+    } catch (error) {
+      console.error('Error creating reservation:', error);
+      throw error;
+    }
+  },
+
+  // Update reservation
+  updateReservation: async (id, reservation) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/reservations/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify(reservation)
+      });
+      if (!response.ok) throw new Error('Failed to update reservation');
+      return await response.json();
+    } catch (error) {
+      console.error(`Error updating reservation ${id}:`, error);
+      throw error;
+    }
+  },
+
+  // Update reservation status
+  updateReservationStatus: async (id, status) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/reservations/${id}/status`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({ status })
+      });
+      if (!response.ok) throw new Error('Failed to update reservation status');
+      return await response.json();
+    } catch (error) {
+      console.error(`Error updating reservation status ${id}:`, error);
+      throw error;
+    }
+  }
+};
+
+// Authentication API endpoints
+export const authService = {
+  // Login
+  login: async (username, password) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ username, password })
+      });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Invalid username or password');
+      }
+      
+      const data = await response.json();
+      localStorage.setItem('token', data.token);
+      return data;
+    } catch (error) {
+      console.error('Login error:', error);
+      throw error;
+    }
+  },
+
+  // Logout
+  logout: () => {
+    localStorage.removeItem('token');
+  },
+
+  // Check if user is authenticated
+  isAuthenticated: () => {
+    const token = localStorage.getItem('token');
+    return !!token;
+  }
+};
+
+// Contact API endpoints
+export const contactService = {
+  // Submit contact form
+  submitContactForm: async (formData) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/contact`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to submit contact form');
+      }
+      
+      return await response.json();
+    } catch (error) {
+      console.error('Error submitting contact form:', error);
+      throw error;
+    }
+  }
+};

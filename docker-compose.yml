@@ -1,0 +1,37 @@
+# filepath: c:\Users\ahmed\Desktop\testing\docker-compose.yml
+version: '3'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: restaurant-website
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - MONGODB_URI=mongodb://mongo:27017/restaurant
+      - JWT_SECRET=your_jwt_secret_key_change_in_production
+    restart: always
+    depends_on:
+      - mongo
+    networks:
+      - restaurant-network
+      
+  mongo:
+    image: mongo:latest
+    volumes:
+      - mongo-data:/data/db
+    ports:
+      - "27017:27017"
+    restart: always
+    networks:
+      - restaurant-network
+
+networks:
+  restaurant-network:
+    driver: bridge
+
+volumes:
+  mongo-data:
